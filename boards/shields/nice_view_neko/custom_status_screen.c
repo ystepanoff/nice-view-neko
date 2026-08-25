@@ -2,7 +2,7 @@
  * Based on nice-view-gem (MIT, © M165437).
  */
 
-#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+#if !defined(CONFIG_ZMK_SPLIT) || defined(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
 #include "widgets/screen.h"
 #else
 #include "widgets/screen_peripheral.h"

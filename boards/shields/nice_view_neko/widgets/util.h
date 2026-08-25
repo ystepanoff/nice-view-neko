@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <zephyr/kernel.h>
 #include <lvgl.h>
 #include <zmk/endpoints.h>
 
