@@ -4,24 +4,35 @@ A custom [nice!view](https://nicekeyboards.com/nice-view) status screen for
 [ZMK](https://zmk.dev), starring the classic **Neko** desktop cat. A ZMK port
 of the pet from my [QMK Sofle config](https://github.com/ystepanoff/sofle-rev2-qmk).
 
+## Layout
+
+The central (left) screen keeps the familiar
+[nice-view-gem](https://github.com/M165437/nice-view-gem) layout: output
+status (USB/BLE) and battery on top, the WPM gauge and chart in the middle,
+BLE profile dots and the active layer name at the bottom.
+
+The peripheral (right) screen shows connection and battery status on top —
+and the cat's playground at the bottom.
+
 ## What the cat does
 
-On the central (left) half, the top of the screen is the cat's playground.
-Its mood follows your typing, in priority order:
+The pet runs on the peripheral, so it reacts to what that half can observe,
+in priority order:
 
 | State | Trigger |
 |---|---|
-| Caps pose | Caps lock is on (host HID indicator) |
-| Braced pose (N/E/S/W) | Ctrl is held; direction is remembered from the last encoder turn |
-| Chase (8 directions) | Encoder rotation: left encoder = east/west, right = north/south, both = diagonals; stops ~2 s after the last tick |
-| Sleep | WPM at or below the low threshold |
-| Walk | WPM between the thresholds |
-| Run | WPM above the high threshold |
-| Jump | Space pressed while typing (WPM above the low threshold) |
+| Caps pose | Caps lock, via HID indicators synced from the central half |
+| Chase (north/south) | Rotating the pet's own (right-half) encoder; stops ~2 s after the last tick |
+| Sleep | Estimated WPM at or below the low threshold |
+| Walk | Estimated WPM between the thresholds |
+| Run | Estimated WPM above the high threshold |
 
-Below the playground: output status (USB/BLE) and battery, then BLE profile
-dots and the active layer name. The peripheral (right) half shows connection
-and battery status, with a napping twin of the cat at the bottom.
+Typing speed is estimated from key presses on the pet's own half (scaled ×2
+to approximate the whole keyboard) over a 10-second window — real WPM and
+keycodes never reach the peripheral in ZMK. For the same reason the ctrl
+braced poses, the space-bar jump, and east/west chasing are dormant in this
+layout; the frames and hooks remain in `widgets/pet.c` should ZMK ever sync
+more state across the split.
 
 ## Usage
 
@@ -56,18 +67,20 @@ include:
     shield: sofle_right nice_view_adapter nice_view_neko
 ```
 
-Caps-lock detection needs `CONFIG_ZMK_HID_INDICATORS=y` (implied on the
-central half by default).
+Caps-lock detection needs `CONFIG_ZMK_HID_INDICATORS=y` and
+`CONFIG_ZMK_SPLIT_PERIPHERAL_HID_INDICATORS=y` — both implied by the shield
+on both halves by default.
 
 ## Options
 
 | Kconfig | Default | Meaning |
 |---|---|---|
 | `CONFIG_NICE_VIEW_NEKO_FRAME_MS` | 200 | Animation frame duration |
-| `CONFIG_NICE_VIEW_NEKO_WPM_LOW` | 10 | Idle at or below this WPM |
-| `CONFIG_NICE_VIEW_NEKO_WPM_HIGH` | 40 | Run above this WPM |
-| `CONFIG_NICE_VIEW_NEKO_JUMP` | y | Jump on space while typing |
+| `CONFIG_NICE_VIEW_NEKO_WPM_LOW` | 10 | Idle at or below this (estimated) WPM |
+| `CONFIG_NICE_VIEW_NEKO_WPM_HIGH` | 40 | Run above this (estimated) WPM |
 | `CONFIG_NICE_VIEW_NEKO_SCROLL_TIMEOUT_MS` | 2000 | Chase linger after encoder ticks |
+| `CONFIG_NICE_VIEW_NEKO_WPM_FIXED_RANGE` | y | Fixed range for the central WPM gauge/chart |
+| `CONFIG_NICE_VIEW_NEKO_WPM_FIXED_RANGE_MAX` | 100 | Maximum of that fixed range |
 | `CONFIG_NICE_VIEW_WIDGET_INVERTED` | n | Invert display colors |
 
 ## Regenerating the art

@@ -12,15 +12,9 @@
 #define SCREEN_WIDTH 68
 #define SCREEN_HEIGHT 160
 
-/*
- * The screen is treated as a virtual portrait surface, 68 px wide and 160 px
- * tall. Each 68x68 canvas is drawn upright, rotated 270°, and aligned
- * TOP_RIGHT with an x offset of -SLICE_*_START, which places its local row 0
- * at that virtual row.
- */
-#define SLICE_PET_START 0
-#define SLICE_STATUS_START 68
-#define SLICE_BOTTOM_START 112
+#define BUFFER_SIZE 68
+#define BUFFER_OFFSET_MIDDLE -44
+#define BUFFER_OFFSET_BOTTOM -112
 
 /* Pet slice geometry (local coordinates within the 68x68 pet canvas) */
 #define PET_GROUND_Y 62
@@ -47,6 +41,7 @@ struct status_state {
     bool active_profile_bonded;
     uint8_t layer_index;
     const char *layer_label;
+    uint8_t wpm[10];
 #else
     bool connected;
 #endif

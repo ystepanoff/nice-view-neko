@@ -47,10 +47,20 @@ config NICE_VIEW_NEKO_SCROLL_TIMEOUT_MS
     int "How long the pet keeps chasing after the last encoder tick"
     default 2000
 
+config NICE_VIEW_NEKO_WPM_FIXED_RANGE
+    bool "Enable fixed range for WPM gauge/chart"
+    default y
+
+config NICE_VIEW_NEKO_WPM_FIXED_RANGE_MAX
+    int "Fixed range maximum for WPM gauge/chart"
+    default 100
+
 config NICE_VIEW_WIDGET_STATUS
     select LV_USE_LABEL
     select LV_USE_IMAGE
     select LV_USE_CANVAS
+    imply ZMK_HID_INDICATORS
+    imply ZMK_SPLIT_PERIPHERAL_HID_INDICATORS
 
 config NICE_VIEW_WIDGET_INVERTED
     bool "Invert display colors"
@@ -59,7 +69,6 @@ if !ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL
 
 config NICE_VIEW_WIDGET_STATUS
     select ZMK_WPM
-    imply ZMK_HID_INDICATORS
 
 endif # !ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL
 
