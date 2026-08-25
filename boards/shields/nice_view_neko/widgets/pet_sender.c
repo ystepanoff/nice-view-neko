@@ -9,7 +9,7 @@
 
 static void pet_relay_invoke(uint32_t type, uint32_t value) {
     struct zmk_behavior_binding binding = {
-        .behavior_dev = DEVICE_DT_NAME(DT_NODELABEL(pet_relay)),
+        .behavior_dev = DEVICE_DT_NAME(DT_NODELABEL(pet_rly)),
         .param1 = type,
         .param2 = value,
     };

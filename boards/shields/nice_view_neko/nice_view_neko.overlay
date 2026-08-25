@@ -21,7 +21,7 @@
     };
 
     behaviors {
-        pet_relay: pet_relay {
+        pet_rly: pet_rly {
             compatible = "zmk,behavior-pet-relay";
             #binding-cells = <2>;
         };
