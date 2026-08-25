@@ -13,8 +13,6 @@
 #define PET_SENSOR_LEFT 0
 #define PET_SENSOR_RIGHT 1
 
-#define PET_WPM_WINDOW_S 10
-
 static struct {
     lv_obj_t *canvas;
     lv_timer_t *timer;
@@ -28,9 +26,6 @@ static struct {
     int64_t last_scroll_x;
     int64_t last_scroll_y;
     bool jumping;
-    bool estimator;
-    uint8_t press_buckets[PET_WPM_WINDOW_S];
-    int64_t bucket_sec[PET_WPM_WINDOW_S];
 } pet = {.ctrl_dir = PET_CTRL_N};
 
 /* neko_scroll direction order: N, NE, E, SE, S, SW, W, NW */
@@ -84,18 +79,6 @@ static void pet_draw(void) {
     rotate_canvas(pet.canvas);
 }
 
-static uint8_t pet_estimate_wpm(void) {
-    int64_t sec = k_uptime_get() / 1000;
-    int total = 0;
-    for (int i = 0; i < PET_WPM_WINDOW_S; i++) {
-        if (sec - pet.bucket_sec[i] < PET_WPM_WINDOW_S) {
-            total += pet.press_buckets[i];
-        }
-    }
-    int wpm = (total * 24) / PET_WPM_WINDOW_S;
-    return wpm > 255 ? 255 : wpm;
-}
-
 static void pet_timer_cb(lv_timer_t *timer) {
     int64_t now = k_uptime_get();
     if (pet.scroll_x != 0 && now - pet.last_scroll_x > CONFIG_NICE_VIEW_NEKO_SCROLL_TIMEOUT_MS) {
@@ -103,10 +86,6 @@ static void pet_timer_cb(lv_timer_t *timer) {
     }
     if (pet.scroll_y != 0 && now - pet.last_scroll_y > CONFIG_NICE_VIEW_NEKO_SCROLL_TIMEOUT_MS) {
         pet.scroll_y = 0;
-    }
-
-    if (pet.estimator) {
-        pet.wpm = pet_estimate_wpm();
     }
 
     pet.frame = (pet.frame + 1) % NEKO_FRAMES_PER_STATE;
@@ -122,22 +101,6 @@ void pet_attach_canvas(lv_obj_t *canvas) {
 }
 
 void pet_set_wpm(uint8_t wpm) { pet.wpm = wpm; }
-
-void pet_note_position(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-    int64_t sec = k_uptime_get() / 1000;
-    int slot = sec % PET_WPM_WINDOW_S;
-    if (pet.bucket_sec[slot] != sec) {
-        pet.press_buckets[slot] = 0;
-        pet.bucket_sec[slot] = sec;
-    }
-    if (pet.press_buckets[slot] < UINT8_MAX) {
-        pet.press_buckets[slot]++;
-    }
-    pet.estimator = true;
-}
 
 void pet_set_caps(bool caps) { pet.caps = caps; }
 

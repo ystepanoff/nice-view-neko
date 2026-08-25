@@ -19,4 +19,11 @@
     chosen {
         zephyr,display = &nice_view;
     };
+
+    behaviors {
+        pet_relay: pet_relay {
+            compatible = "zmk,behavior-pet-relay";
+            #binding-cells = <2>;
+        };
+    };
 };

@@ -10,7 +10,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/event_manager.h>
 #include <zmk/events/activity_state_changed.h>
 #include <zmk/events/battery_state_changed.h>
-#include <zmk/events/position_state_changed.h>
 #include <zmk/events/usb_conn_state_changed.h>
 #include <zmk/split/bluetooth/peripheral.h>
 #include <zmk/events/split_peripheral_status_changed.h>
@@ -117,29 +116,6 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_peripheral_status, struct peripheral_status_s
                             output_status_update_cb, get_state)
 ZMK_SUBSCRIPTION(widget_peripheral_status, zmk_split_peripheral_status_changed);
 
-struct pet_position_state {
-    bool pressed;
-    bool valid;
-};
-
-static void pet_position_update_cb(struct pet_position_state state) {
-    if (state.valid) {
-        pet_note_position(state.pressed);
-    }
-}
-
-static struct pet_position_state pet_position_get_state(const zmk_event_t *eh) {
-    const struct zmk_position_state_changed *ev = as_zmk_position_state_changed(eh);
-    if (ev == NULL) {
-        return (struct pet_position_state){.valid = false};
-    }
-    return (struct pet_position_state){.pressed = ev->state, .valid = true};
-}
-
-ZMK_DISPLAY_WIDGET_LISTENER(widget_pet_position, struct pet_position_state,
-                            pet_position_update_cb, pet_position_get_state)
-ZMK_SUBSCRIPTION(widget_pet_position, zmk_position_state_changed);
-
 #if IS_ENABLED(CONFIG_ZMK_KEYMAP_SENSORS)
 struct pet_sensor_state {
     uint8_t index;
@@ -241,7 +217,6 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
     widget_peripheral_status_init();
-    widget_pet_position_init();
 #if IS_ENABLED(CONFIG_ZMK_KEYMAP_SENSORS)
     widget_pet_sensor_init();
 #endif

@@ -16,23 +16,23 @@ and the cat's playground at the bottom.
 
 ## What the cat does
 
-The pet runs on the peripheral, so it reacts to what that half can observe,
-in priority order:
+The pet runs on the peripheral. The central half relays its state across the
+split via a hidden global-locality behavior (`pet_relay`): the real WPM value
+(about once a second while typing) plus ctrl and space key events. Caps lock
+arrives through ZMK's HID indicator sync. In priority order:
 
 | State | Trigger |
 |---|---|
-| Caps pose | Caps lock, via HID indicators synced from the central half |
+| Caps pose | Caps lock is on (host HID indicator) |
+| Braced pose (N/E/S/W) | Ctrl is held; direction is remembered from the last encoder turn |
 | Chase (north/south) | Rotating the pet's own (right-half) encoder; stops ~2 s after the last tick |
-| Sleep | Estimated WPM at or below the low threshold |
-| Walk | Estimated WPM between the thresholds |
-| Run | Estimated WPM above the high threshold |
+| Sleep | WPM at or below the low threshold |
+| Walk | WPM between the thresholds |
+| Run | WPM above the high threshold |
+| Jump | Space pressed while typing (WPM above the low threshold) |
 
-Typing speed is estimated from key presses on the pet's own half (scaled ×2
-to approximate the whole keyboard) over a 10-second window — real WPM and
-keycodes never reach the peripheral in ZMK. For the same reason the ctrl
-braced poses, the space-bar jump, and east/west chasing are dormant in this
-layout; the frames and hooks remain in `widgets/pet.c` should ZMK ever sync
-more state across the split.
+East/west chasing stays dormant: the left encoder's rotation is only seen by
+the central half, and relaying every detent over BLE isn't worth it.
 
 ## Usage
 

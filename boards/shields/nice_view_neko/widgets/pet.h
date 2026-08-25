@@ -15,7 +15,6 @@ enum pet_ctrl_direction {
 void pet_attach_canvas(lv_obj_t *canvas);
 
 void pet_set_wpm(uint8_t wpm);
-void pet_note_position(bool pressed);
 void pet_set_caps(bool caps);
 void pet_key_event(uint16_t usage_page, uint32_t keycode, bool pressed);
 void pet_sensor_event(uint8_t sensor_index, int32_t delta);
