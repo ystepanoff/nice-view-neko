@@ -1,0 +1,14 @@
+#pragma once
+
+#include <lvgl.h>
+
+#define NEKO_FRAME_W 32
+#define NEKO_FRAME_H 32
+#define NEKO_FRAMES_PER_STATE 2
+
+extern const lv_img_dsc_t *const neko_idle[2];
+extern const lv_img_dsc_t *const neko_walk[2];
+extern const lv_img_dsc_t *const neko_run[2];
+extern const lv_img_dsc_t *const neko_caps[2];
+extern const lv_img_dsc_t *const neko_ctrl[8];
+extern const lv_img_dsc_t *const neko_scroll[16];
