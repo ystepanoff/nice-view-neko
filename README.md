@@ -90,7 +90,7 @@ LVGL 9 `I1` images by `tools/convert_qmk_pet.py`:
 
 ```sh
 python3 tools/convert_qmk_pet.py path/to/qmk/pets/neko.c \
-    boards/shields/nice_view_neko/assets
+    boards/shields/nice_view_neko/assets --scale 2
 ```
 
 Use `--preview <array>` to eyeball frames as ASCII art before committing.

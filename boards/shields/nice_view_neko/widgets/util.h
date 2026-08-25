@@ -17,8 +17,8 @@
 #define BUFFER_OFFSET_BOTTOM -112
 
 /* Pet slice geometry (local coordinates within the 68x68 pet canvas) */
-#define PET_GROUND_Y 62
-#define PET_JUMP_PX 8
+#define PET_GROUND_Y 64
+#define PET_JUMP_PX 4
 
 #define CANVAS_SIZE 68
 #define CANVAS_COLOR_FORMAT LV_COLOR_FORMAT_L8
