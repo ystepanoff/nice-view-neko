@@ -102,7 +102,12 @@ void pet_attach_canvas(lv_obj_t *canvas) {
 
 void pet_set_wpm(uint8_t wpm) { pet.wpm = wpm; }
 
-void pet_set_caps(bool caps) { pet.caps = caps; }
+void pet_set_caps(bool caps) {
+    if (pet.caps != caps) {
+        pet.caps = caps;
+        pet_draw();
+    }
+}
 
 void pet_key_event(uint16_t usage_page, uint32_t keycode, bool pressed) {
     if (usage_page != PET_HID_USAGE_PAGE_KEY) {
@@ -117,10 +122,12 @@ void pet_key_event(uint16_t usage_page, uint32_t keycode, bool pressed) {
         } else if (pet.ctrl_held > 0) {
             pet.ctrl_held--;
         }
+        pet_draw();
         break;
 #if IS_ENABLED(CONFIG_NICE_VIEW_NEKO_JUMP)
     case PET_HID_KEY_SPACE:
         pet.jumping = pressed && pet.wpm > CONFIG_NICE_VIEW_NEKO_WPM_LOW;
+        pet_draw();
         break;
 #endif
     default:

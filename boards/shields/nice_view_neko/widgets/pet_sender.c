@@ -18,7 +18,6 @@ static void pet_relay_invoke(uint32_t type, uint32_t value) {
         .timestamp = k_uptime_get(),
     };
     zmk_behavior_invoke_binding(&binding, event, true);
-    zmk_behavior_invoke_binding(&binding, event, false);
 }
 
 static int pet_sender_wpm_listener(const zmk_event_t *eh) {
