@@ -2,4 +2,3 @@ name: "zmk-shield-nice!view-neko"
 build:
   settings:
     board_root: .
-    dts_root: .

@@ -1,5 +1,0 @@
-description: Neko pet state relay (central to peripheral)
-
-compatible: "zmk,behavior-pet-relay"
-
-include: two_param.yaml

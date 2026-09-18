@@ -6,33 +6,27 @@ of the pet from my [QMK Sofle config](https://github.com/ystepanoff/sofle-rev2-q
 
 ## Layout
 
-The central (left) screen keeps the familiar
-[nice-view-gem](https://github.com/M165437/nice-view-gem) layout: output
-status (USB/BLE) and battery on top, the WPM gauge and chart in the middle,
-BLE profile dots and the active layer name at the bottom.
+The central (left) screen is the cat's playground on top, with output status
+(USB/BLE) and battery in the middle, and BLE profile dots plus the active
+layer name at the bottom.
 
 The peripheral (right) screen shows connection and battery status on top —
-and the cat's playground at the bottom.
+and a napping twin of the cat at the bottom.
 
 ## What the cat does
 
-The pet runs on the peripheral. The central half relays its state across the
-split via a hidden global-locality behavior (`pet_relay`): the real WPM value
-(about once a second while typing) plus ctrl and space key events. Caps lock
-arrives through ZMK's HID indicator sync. In priority order:
+The pet runs on the central half, where everything it reacts to is directly
+observable — no state crosses the split. In priority order:
 
 | State | Trigger |
 |---|---|
 | Caps pose | Caps lock is on (host HID indicator) |
 | Braced pose (N/E/S/W) | Ctrl is held; direction is remembered from the last encoder turn |
-| Chase (north/south) | Rotating the pet's own (right-half) encoder; stops ~2 s after the last tick |
+| Chase (8 directions) | Encoder rotation: left encoder = east/west, right = north/south, both = diagonals; stops ~2 s after the last tick |
 | Sleep | WPM at or below the low threshold |
 | Walk | WPM between the thresholds |
 | Run | WPM above the high threshold |
 | Jump | Space pressed while typing (WPM above the low threshold) |
-
-East/west chasing stays dormant: the left encoder's rotation is only seen by
-the central half, and relaying every detent over BLE isn't worth it.
 
 ## Usage
 
@@ -67,9 +61,8 @@ include:
     shield: sofle_right nice_view_adapter nice_view_neko
 ```
 
-Caps-lock detection needs `CONFIG_ZMK_HID_INDICATORS=y` and
-`CONFIG_ZMK_SPLIT_PERIPHERAL_HID_INDICATORS=y` — both implied by the shield
-on both halves by default.
+Caps-lock detection needs `CONFIG_ZMK_HID_INDICATORS=y`, implied by the
+shield on the central half by default.
 
 ## Options
 
@@ -79,8 +72,6 @@ on both halves by default.
 | `CONFIG_NICE_VIEW_NEKO_WPM_LOW` | 10 | Idle at or below this (estimated) WPM |
 | `CONFIG_NICE_VIEW_NEKO_WPM_HIGH` | 40 | Run above this (estimated) WPM |
 | `CONFIG_NICE_VIEW_NEKO_SCROLL_TIMEOUT_MS` | 2000 | Chase linger after encoder ticks |
-| `CONFIG_NICE_VIEW_NEKO_WPM_FIXED_RANGE` | y | Fixed range for the central WPM gauge/chart |
-| `CONFIG_NICE_VIEW_NEKO_WPM_FIXED_RANGE_MAX` | 100 | Maximum of that fixed range |
 | `CONFIG_NICE_VIEW_WIDGET_INVERTED` | n | Invert display colors |
 
 ## Regenerating the art

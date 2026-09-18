@@ -12,9 +12,9 @@
 #define SCREEN_WIDTH 68
 #define SCREEN_HEIGHT 160
 
-#define BUFFER_SIZE 68
-#define BUFFER_OFFSET_MIDDLE -44
-#define BUFFER_OFFSET_BOTTOM -112
+#define SLICE_PET_START 0
+#define SLICE_STATUS_START 68
+#define SLICE_BOTTOM_START 112
 
 /* Pet slice geometry (local coordinates within the 68x68 pet canvas) */
 #define PET_GROUND_Y 64
@@ -41,7 +41,6 @@ struct status_state {
     bool active_profile_bonded;
     uint8_t layer_index;
     const char *layer_label;
-    uint8_t wpm[10];
 #else
     bool connected;
 #endif

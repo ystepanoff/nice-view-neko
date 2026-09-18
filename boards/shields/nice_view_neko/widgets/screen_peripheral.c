@@ -19,16 +19,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/display.h>
 #include <zmk/usb.h>
 
-#if IS_ENABLED(CONFIG_ZMK_KEYMAP_SENSORS)
-#include <zmk/events/sensor_event.h>
-#include <zmk/sensors.h>
-#endif
-
-#if IS_ENABLED(CONFIG_ZMK_SPLIT_PERIPHERAL_HID_INDICATORS)
-#include <zmk/events/hid_indicators_changed.h>
-#define PET_HID_LED_CAPS_LOCK 0x02
-#endif
-
 #include "battery.h"
 #include "output.h"
 #include "pet.h"
@@ -116,64 +106,6 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_peripheral_status, struct peripheral_status_s
                             output_status_update_cb, get_state)
 ZMK_SUBSCRIPTION(widget_peripheral_status, zmk_split_peripheral_status_changed);
 
-#if IS_ENABLED(CONFIG_ZMK_KEYMAP_SENSORS)
-struct pet_sensor_state {
-    uint8_t index;
-    int32_t delta;
-    bool valid;
-};
-
-static void pet_sensor_update_cb(struct pet_sensor_state state) {
-    if (state.valid) {
-        pet_sensor_event(state.index, state.delta);
-    }
-}
-
-static struct pet_sensor_state pet_sensor_get_state(const zmk_event_t *eh) {
-    const struct zmk_sensor_event *ev = as_zmk_sensor_event(eh);
-    if (ev == NULL || ev->channel_data_size < 1) {
-        return (struct pet_sensor_state){.valid = false};
-    }
-    return (struct pet_sensor_state){
-        .index = ev->sensor_index,
-        .delta = ev->channel_data[0].value.val1,
-        .valid = true,
-    };
-}
-
-ZMK_DISPLAY_WIDGET_LISTENER(widget_pet_sensor, struct pet_sensor_state, pet_sensor_update_cb,
-                            pet_sensor_get_state)
-ZMK_SUBSCRIPTION(widget_pet_sensor, zmk_sensor_event);
-#endif /* IS_ENABLED(CONFIG_ZMK_KEYMAP_SENSORS) */
-
-#if IS_ENABLED(CONFIG_ZMK_SPLIT_PERIPHERAL_HID_INDICATORS)
-struct pet_caps_state {
-    bool caps;
-    bool valid;
-};
-
-static void pet_caps_update_cb(struct pet_caps_state state) {
-    if (state.valid) {
-        pet_set_caps(state.caps);
-    }
-}
-
-static struct pet_caps_state pet_caps_get_state(const zmk_event_t *eh) {
-    const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
-    if (ev == NULL) {
-        return (struct pet_caps_state){.valid = false};
-    }
-    return (struct pet_caps_state){
-        .caps = (ev->indicators & PET_HID_LED_CAPS_LOCK) != 0,
-        .valid = true,
-    };
-}
-
-ZMK_DISPLAY_WIDGET_LISTENER(widget_pet_caps, struct pet_caps_state, pet_caps_update_cb,
-                            pet_caps_get_state)
-ZMK_SUBSCRIPTION(widget_pet_caps, zmk_hid_indicators_changed);
-#endif /* IS_ENABLED(CONFIG_ZMK_SPLIT_PERIPHERAL_HID_INDICATORS) */
-
 /**
  * Activity -> pause/resume pet animation
  **/
@@ -217,12 +149,6 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
     widget_peripheral_status_init();
-#if IS_ENABLED(CONFIG_ZMK_KEYMAP_SENSORS)
-    widget_pet_sensor_init();
-#endif
-#if IS_ENABLED(CONFIG_ZMK_SPLIT_PERIPHERAL_HID_INDICATORS)
-    widget_pet_caps_init();
-#endif
     widget_pet_activity_init();
 
     pet_attach_canvas(pet_canvas);
